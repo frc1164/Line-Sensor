@@ -15,7 +15,7 @@ void setup() {
   Serial.begin(9600);
   
   //calibrate sensor to create calibratedMax and CalibratedMin arrays
-    qtrrc.calibrate(QTR_EMITTERS_ON);
+  qtrrc.calibrate(QTR_EMITTERS_ON);
 
   //set saved calibration values HERE
   unsigned int savedMax[NUM_SENSORS] = {2500,1716,2160,1660,2020};
@@ -29,13 +29,49 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-   sendData();
+  qtrrc.readCalibrated(sensorValues);
+  //sendRawData();
+  roughTuning();
   delay(250);
 }// end of loop()
 
-void sendData(){
+void roughTuning(){
+  //initial, quick and dirty Line sensing step
+  int z1, z2;
+  char dir;
+  z1 = z2 = -1;
+
+  //locate white line from sensorValues
+  for(int i = 0; i < NUM_SENSORS; i++){
+    if(sensorValues[i] == 0 && z1 == -1) z1 = i;
+    else if(sensorValues[i] == 0 && z2 == -1) {
+      z2 = i; 
+      break;
+    }//end else if
+  }// end for
+
+  //determine direction
+  if(z2 == -1){
+    if(z1 > 2) dir = 'R';
+
+    else if(z1 < 2) dir = 'F'; 
+
+    else dir = 'N';
+  }//end if
+
+  else{
+    double avg = ((double)z1 + z2)/2;
+    if(avg > 2) dir = 'R';
+    else if (avg < 2) dir = 'F';
+  }//end else
+
+  //send drive signal
+  Serial.println(dir);
+
+}//end roughTuning
+
+void sendRawData(){
   //send the sensor data to serial
-   qtrrc.readCalibrated(sensorValues);
 
   String dataLine = "";
   //Output data to serial
@@ -48,3 +84,4 @@ void sendData(){
   //reset dataline
   dataLine = "";
 }//end sendData
+
