@@ -30,44 +30,34 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   qtrrc.readCalibrated(sensorValues);
-  //sendRawData();
+  sendRawData();
   roughTuning();
   delay(250);
 }// end of loop()
 
 void roughTuning(){
   //initial, quick and dirty Line sensing step
-  int z1, z2;
-  char dir;
-  z1 = z2 = -1;
+  int z1, z2 = -1;
+  double offset;
 
-  //locate white line from sensorValues
+  //locate first zero
   for(int i = 0; i < NUM_SENSORS; i++){
-    if(sensorValues[i] == 0 && z1 == -1) z1 = i;
-    else if(sensorValues[i] == 0 && z2 == -1) {
-      z2 = i; 
+    if(sensorValues[i] == 0){
+      z1 = i;
       break;
-    }//end else if
-  }// end for
+    }//end if
+  }//end for
 
-  //determine direction
-  if(z2 == -1){
-    if(z1 > 2) dir = 'R';
+  //locate last zero in array
+  for(int i = NUM_SENSORS - 1; i >= 0; i-- ){
+    if(sensorValues[i] == 0){
+      z2 = i;
+      break;
+    }//end if
+  }//end for
 
-    else if(z1 < 2) dir = 'F'; 
-
-    else dir = 'N';
-  }//end if
-
-  else{
-    double avg = ((double)z1 + z2)/2;
-    if(avg > 2) dir = 'R';
-    else if (avg < 2) dir = 'F';
-  }//end else
-
-  //send drive signal
-  Serial.println(dir);
-
+  //find offset from center by averaging indeces an taking distance from center
+  Serial.println((String)z1 + " " + z2);
 }//end roughTuning
 
 void sendRawData(){
