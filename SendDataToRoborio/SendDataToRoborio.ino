@@ -18,8 +18,8 @@ void setup() {
   qtrrc.calibrate(QTR_EMITTERS_ON);
 
   //set saved calibration values HERE
-  unsigned int savedMax[NUM_SENSORS] = {2500,1716,2160,1660,2020};
-  unsigned int savedMin[NUM_SENSORS] = {604,480,520,448,456};
+  unsigned int savedMax[NUM_SENSORS] = {2500,1816,2488,1720,2484};
+  unsigned int savedMin[NUM_SENSORS] = {1220,740,1024,768,1024};
   for(int i = 0; i < NUM_SENSORS; i++){
     qtrrc.calibratedMaximumOn[i] = savedMax[i];
     qtrrc.calibratedMinimumOn[i] = savedMin[i]; 
@@ -30,14 +30,15 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   qtrrc.readCalibrated(sensorValues);
-  sendRawData();
+  //sendRawData();
   roughTuning();
   delay(250);
 }// end of loop()
 
 void roughTuning(){
   //initial, quick and dirty Line sensing step
-  int z1, z2 = -1;
+  int z1 = -1;
+  int z2 = -1;
   double offset;
 
   //locate first zero
@@ -56,8 +57,14 @@ void roughTuning(){
     }//end if
   }//end for
 
-  //find offset from center by averaging indeces an taking distance from center
-  Serial.println((String)z1 + " " + z2);
+  if(z1 == -1 && z2 == -1){// test if no line was found
+    Serial.println('N');
+  }
+  else {
+    //find offset from center by averaging indeces an taking distance from center
+    offset = (z1 + z2)/2.0 - (NUM_SENSORS / 2.0);
+    Serial.println(offset, 2);
+  }
 }//end roughTuning
 
 void sendRawData(){
