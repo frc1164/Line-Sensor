@@ -2,10 +2,10 @@
 
 #define TIMEOUT 2500
 #define EMITTER_PIN 53
-#define NUM_SENSORS 5
+#define NUM_SENSORS 10
 #define STATUS_LIGHT 13
 
-QTRSensorsRC qtrrc((unsigned char[]) {52,51,50,49,48}, 
+QTRSensorsRC qtrrc((unsigned char[]) {52,51,50,49,48,47,44,43,46,45}, 
   NUM_SENSORS, TIMEOUT, EMITTER_PIN);
 
 unsigned int sensorValues[NUM_SENSORS];
@@ -18,8 +18,9 @@ void setup() {
   qtrrc.calibrate(QTR_EMITTERS_ON);
 
   //set saved calibration values HERE
-  unsigned int savedMax[NUM_SENSORS] = {2500,1820,2500,1724,2500};
-  unsigned int savedMin[NUM_SENSORS] = {1132,796,928,804,960};
+  unsigned int savedMax[NUM_SENSORS] = {1556,1284,316,1020,260,1412,1292,1292,1548,1480};
+  unsigned int savedMin[NUM_SENSORS] = {200,136,132,132,132,192,192,196,192,196};
+
   for(int i = 0; i < NUM_SENSORS; i++){
     qtrrc.calibratedMaximumOn[i] = savedMax[i];
     qtrrc.calibratedMinimumOn[i] = savedMin[i]; 
@@ -63,7 +64,7 @@ void roughTuning(){
     offset = (z1 + z2)/2.0 - (NUM_SENSORS / 2.0);
     Serial.print(offset);
   }//end if_else
-  Serial.print("%");
+  Serial.print("\n");
 }//end roughTuning
 
 void sendRawData(){
@@ -80,4 +81,3 @@ void sendRawData(){
   //reset dataline
   dataLine = "";
 }//end sendData
-

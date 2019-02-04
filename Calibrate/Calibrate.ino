@@ -3,14 +3,14 @@
 
 #define TIMEOUT 2500
 #define EMITTER_PIN 53
-#define NUM_SENSORS 5
+#define NUM_SENSORS 10
 
 unsigned int sensorValues[NUM_SENSORS];
 
 unsigned int calibratedMax[NUM_SENSORS];
 unsigned int calibratedMin[NUM_SENSORS];
 
-QTRSensorsRC qtrrc((unsigned char[]) {52,51,50,49,48}, 
+QTRSensorsRC qtrrc((unsigned char[]) {52,51,50,49,48,47,46,45,44,43}, 
   NUM_SENSORS, TIMEOUT, EMITTER_PIN);
 
 void setup(){
