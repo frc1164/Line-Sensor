@@ -9,6 +9,7 @@ QTRSensorsRC qtrrc((unsigned char[]) {52,51,50,49,48,47,44,43,46,45},
   NUM_SENSORS, TIMEOUT, EMITTER_PIN);
 
 unsigned int sensorValues[NUM_SENSORS];
+double offsets[] = {-2.25,-.175,-1.25,-.75,-.25,.25,.75,1.25,1.75,2.25};
 
 void setup() {
   // put your setup code here, to run once:
@@ -60,8 +61,8 @@ void roughTuning(){
   if(z1 == -1 && z2 == -1){// test if no line was found
     Serial.print(offset = 0.0);
   } else {
-    //find offset from center by averaging indeces an taking distance from center
-    offset = (z1 + z2)/2.0 - (NUM_SENSORS / 2.0);
+    //find offset from center by averaging the offset of each end of the white line
+    offset = (offsets[z1] + offsets[z2])/2.0;
     Serial.print(offset);
   }//end if_else
   Serial.print("\n");
