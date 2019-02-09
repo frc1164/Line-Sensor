@@ -5,11 +5,11 @@
 #define NUM_SENSORS 10
 #define STATUS_LIGHT 13
 
-QTRSensorsRC qtrrc((unsigned char[]) {52,51,50,49,48,47,44,43,46,45}, 
+QTRSensorsRC qtrrc((unsigned char[]) {52,51,50,49,48,47,46,45,44,43}, 
   NUM_SENSORS, TIMEOUT, EMITTER_PIN);
 
 unsigned int sensorValues[NUM_SENSORS];
-double offsets[] = {-2.25,-.175,-1.25,-.75,-.25,.25,.75,1.25,1.75,2.25};
+double offsets[] = {-2.25,-1.75,-1.25,-.75,-.25,.25,.75,1.25,1.75,2.25};
 
 void setup() {
   // put your setup code here, to run once:
@@ -19,8 +19,8 @@ void setup() {
   qtrrc.calibrate(QTR_EMITTERS_ON);
 
   //set saved calibration values HERE
-  unsigned int savedMax[NUM_SENSORS] = {1556,1284,316,1020,260,1412,1292,1292,1548,1480};
-  unsigned int savedMin[NUM_SENSORS] = {200,136,132,132,132,192,192,196,192,196};
+  unsigned int savedMax[NUM_SENSORS] = {1480,1216,316,960,316,1352,1480,1432,1288,1288};
+  unsigned int savedMin[NUM_SENSORS] = {196,132,132,132,132,192,192,192,192,252};
 
   for(int i = 0; i < NUM_SENSORS; i++){
     qtrrc.calibratedMaximumOn[i] = savedMax[i];
@@ -59,13 +59,13 @@ void roughTuning(){
   }//end for
 
   if(z1 == -1 && z2 == -1){// test if no line was found
-    Serial.print(offset = 0.0);
-  } else {
-    //find offset from center by averaging the offset of each end of the white line
+   offset = 0.0;}
+  else{ //find offset from center by averaging the offset of each end of the white line
     offset = (offsets[z1] + offsets[z2])/2.0;
+    }//end if else
+    
     Serial.print(offset);
-  }//end if_else
-  Serial.print("\n");
+    Serial.print("\n");
 }//end roughTuning
 
 void sendRawData(){
