@@ -2,83 +2,151 @@
 
 #define TIMEOUT 2500
 #define EMITTER_PIN 53
-#define NUM_SENSORS 10
-#define STATUS_LIGHT 13
+#define NUM_SENSORS 40
 
-QTRSensorsRC qtrrc((unsigned char[]) {52,51,50,49,48,47,46,45,44,43}, 
-  NUM_SENSORS, TIMEOUT, EMITTER_PIN);
+QTRSensorsRC qtrrc1((unsigned char[]) {48,49,50,51,52,43,44,45,46,47,32,33,34,35,36}, 
+  16, TIMEOUT, EMITTER_PIN);
+
+QTRSensorsRC qtrrc2((unsigned char[]) {38,39,40,41,42,37,31,30,29,28,27,26,25,24,23,22,21}, 
+  16, TIMEOUT, EMITTER_PIN);
+
+QTRSensorsRC qtrrc3((unsigned char[]) {20,19,18,17,16,15,14,0},
+  8, TIMEOUT, EMITTER_PIN);
 
 unsigned int sensorValues[NUM_SENSORS];
-double offsets[] = {-2.25,-1.75,-1.25,-.75,-.25,.25,.75,1.25,1.75,2.25};
+unsigned int sensorArray1[16] = {0};
+unsigned int sensorArray2[16] = {0};
+unsigned int sensorArray3[8] = {0};
+unsigned int array1_offsets[20] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
+unsigned int array2_offsets[20] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(9600);
-  
-  //calibrate sensor to create calibratedMax and CalibratedMin arrays
-  qtrrc.calibrate(QTR_EMITTERS_ON);
-
-  //set saved calibration values HERE
-  unsigned int savedMax[NUM_SENSORS] = {1480,1216,316,960,316,1352,1480,1432,1288,1288};
-  unsigned int savedMin[NUM_SENSORS] = {196,132,132,132,132,192,192,192,192,252};
-
-  for(int i = 0; i < NUM_SENSORS; i++){
-    qtrrc.calibratedMaximumOn[i] = savedMax[i];
-    qtrrc.calibratedMinimumOn[i] = savedMin[i]; 
-  }//end for
-
+   Serial.begin(9600);
+   calibrateArrays();
 }// end of setup
 
 void loop() {
   // put your main code here, to run repeatedly:
-  qtrrc.readCalibrated(sensorValues);
-  //sendRawData();
-  roughTuning();
-  }// end of loop()
+  
+  qtrrc1.read(sensorArray1);
+  qtrrc2.read(sensorArray2);
+  qtrrc3.read(sensorArray3);
+  
+  sendRawData(sensorArray1, 16);
+  sendRawData(sensorArray2, 16);
+  sendRawData(sensorArray3, 8);
+//  sendArray1Offset();
+//  Serial.print(' ');
+//  sendArray2Offset();
 
-void roughTuning(){
-  //initial, quick and dirty Line sensing step
-  int z1 = -1;
-  int z2 = -1;
-  double offset;
+Serial.print('\n');
+}// end of loop()
 
-  //locate first zero
-  for(int i = 0; i < NUM_SENSORS; i++){
-    if(sensorValues[i] == 0){
-      z1 = i;
-      break;
-    }//end if
+//send array of true or false values for each sensor, as chars t and f
+void sendData(unsigned int *A, int size){
+  for(int i = 0; i < size; i++){
+    if(A[i] < 10) Serial.print('t');
+    else Serial.print('f');
   }//end for
-
-  //locate last zero in array
-  for(int i = NUM_SENSORS - 1; i >= 0; i-- ){
-    if(sensorValues[i] == 0){
-      z2 = i;
-      break;
-    }//end if
-  }//end for
-
-  if(z1 == -1 && z2 == -1){// test if no line was found
-   offset = 0.0;}
-  else{ //find offset from center by averaging the offset of each end of the white line
-    offset = (offsets[z1] + offsets[z2])/2.0;
-    }//end if else
-    
-    Serial.print(offset);
-    Serial.print("\n");
-}//end roughTuning
-
-void sendRawData(){
-  //send the sensor data to serial
-
-  String dataLine = "";
-  //Output data to serial
-  for(int i = 0; i < NUM_SENSORS; i++){
-    dataLine += (String)sensorValues[i];
-    dataLine += '\t';
-  }// of serial output 
-  Serial.println(dataLine);
-
-  //reset dataline
-  dataLine = "";
 }//end sendData
+
+void sendRawData(unsigned int *A, int size){
+  for(int i = 0; i < size; i++){
+    Serial.print(A[i]);
+    Serial.print(' ');
+  }//end for
+}//end sendData
+
+void calibrateArrays(){
+  qtrrc1.calibrate();
+  qtrrc2.calibrate();
+  qtrrc3.calibrate();
+
+  unsigned int savedMaxOn[NUM_SENSORS] = {
+100,8,100,100,100,100,100,100,980,388,2500,196,196,196,292,2500,8,8,8,92,92,260,2500,2500,2500,2500,2500,2500,2500,2500,2500,2500,2500,2500,2500,2500,2500,2500,2500,2500
+};
+  unsigned int savedMinOn[NUM_SENSORS] ={ 
+8,8,8,8,8,8,8,8,492,196,8,100,104,104,200,8,8,8,8,92,92,264,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8
+};
+                
+  for(int i = 0; i < 16; i++){
+    qtrrc1.calibratedMaximumOn[i] = savedMaxOn[i];
+    qtrrc1.calibratedMinimumOn[i] = savedMinOn[i];
+  }//end for1
+
+  for(int i = 16; i < 32; i++){
+    qtrrc2.calibratedMaximumOn[i] = savedMaxOn[i];
+    qtrrc2.calibratedMinimumOn[i] = savedMinOn[i];
+  }//end for2
+
+  for(int i = 32; i < 40; i++){
+    qtrrc3.calibratedMaximumOn[i] = savedMaxOn[i];
+    qtrrc3.calibratedMinimumOn[i] = savedMinOn[i];
+  }//end for3
+
+  
+}//end calibrateArrays
+
+void sendArray1Offset(){
+  double lineDetected[40];    
+  int i, j = 0;
+  double sum = 0;
+  for(int i = 0; i < 16; i++){
+    if(sensorArray1[i] < 10){
+      lineDetected[j] = array1_offsets[i];
+      j++;
+    }//endif
+  }//end for
+  
+  for(int i = 16; i < 20; i++){
+    if(sensorArray2[i] < 10){
+      lineDetected[j] = sensorArray2[i-16];
+      j++;
+    }//end if
+  }//end for
+
+  //average the offsets of the sensors that detected white
+  for(i = 0; i < j; i++){
+    sum += lineDetected[i];
+  }//end for
+  if(j == 0) {
+    Serial.print(0);
+    return;
+  }//end if
+  Serial.print(sum/j);
+}//end sendArray1Offset
+
+void sendArray2Offset(){
+  double lineDetected[40];    
+  double sensorValues[40];
+  int i, j = 0;
+  double sum = 0;
+  for(int i = 0; i < 16; i++){
+    sensorValues[i] = sensorArray1[i];
+  }
+  for(int i = 16; i < 32; i++){
+    sensorValues[i] = sensorArray2[i-16];
+  }
+  for(int i = 32; i < 40; i++){
+    sensorValues[i] = sensorArray3[i-32];
+  }
+
+  //Find all positions where white was detected
+  for(i = 20; i < 40; i++){
+    if(sensorValues[i] == 't'){
+      lineDetected[j] = array2_offsets[i];
+      j++;
+    }//end if
+  }//end for
+
+  //average the offsets of the sensors that detected white
+  for(i = 0; i < j; i++){
+    sum += lineDetected[i];
+  }//end for 
+  if(j == 0) {
+    Serial.print(0);
+    return;
+  }//end if
+  Serial.print(sum/j);
+}//end sendArray2Offset
