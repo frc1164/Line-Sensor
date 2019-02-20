@@ -17,8 +17,8 @@ unsigned int sensorValues[NUM_SENSORS];
 unsigned int sensorArray1[16] = {0};
 unsigned int sensorArray2[16] = {0};
 unsigned int sensorArray3[8] = {0};
-unsigned int array1_offsets[20] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
-unsigned int array2_offsets[20] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
+double array1_offsets[20] = {-7.875, -6.750, -5.625, -4.500, -3.375, -2.25, -1.75, -1.25, -0.75, -0.25, 0.25, 0.75, 1.25, 1.75, 2.25, 3.375, 4.500, 5.625, 6.750, 7.875};
+double array2_offsets[20] = {-4.75, -4.25, -3.75, -3.25, -2.75, -1.75, -1.25, -0.75, -0.25, 0.25, 0.75, 1.25, 1.75, 2.25, 2.75, 3.25, 3.75, 4.25, 4.75};
 
 void setup() {
   // put your setup code here, to run once:
