@@ -13,11 +13,6 @@ unsigned int sensorValues[NUM_SENSORS];
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(BAUDRATE);
-  Serial.println("Beginning Calibration");
-  for(int i = 0; i < 80; i++){
-    qtrrc.calibrate();
-  }//end for
-  Serial.println("Calibration Complete");
 }
 
 void loop() {
