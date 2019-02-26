@@ -9,7 +9,7 @@
 #define BUTTON 8
 #define CALIBRATION_CONSTANT 200
 
-QTRSensorsRC qtrrc((unsigned char[]) {3,4,5,6,7},
+QTRDimmableRC qtrrc((unsigned char[]) {3,4,5,6,7},
   NUM_SENSORS, TIMEOUT, EMITTER_PIN);
 
 unsigned int sensorValues[NUM_SENSORS];
