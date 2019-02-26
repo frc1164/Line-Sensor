@@ -7,6 +7,7 @@
 #define BAUDRATE 9600
 #define NUM_SENSORS 5
 #define BUTTON 8
+#define CALIBRATION_CONSTANT 200
 
 QTRSensorsRC qtrrc((unsigned char[]) {3,4,5,6,7},
   NUM_SENSORS, TIMEOUT, EMITTER_PIN);
@@ -56,8 +57,10 @@ void loop() {
 void saveCalibration(){
   for(int i = 0; i < NUM_SENSORS; i++){
     EEPROM.update(i, qtrrc.calibratedMaximumOn[i]);
-    EEPROM.update(i + NUM_SENSORS, qtrrc.calibratedMinimumOn[i]);
+    EEPROM.update(i + NUM_SENSORS, qtrrc.calibratedMinimumOn[i] - CALIBRATION_CONSTANT);
   }//end save step
+
+  
 }//end saveCalibration
 
 void updateCalibration(){
