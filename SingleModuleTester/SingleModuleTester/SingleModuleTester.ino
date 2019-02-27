@@ -2,7 +2,7 @@
 #include <EEPROM.h>
 
 #define NUM_SENSORS 5
-#define TIMEOUT 2500
+#define TIMEOUT 3000
 #define EMITTER_PIN 2
 #define BAUDRATE 9600
 #define NUM_SENSORS 5
