@@ -4,11 +4,11 @@
 
 #define TIMEOUT 2500
 #define EMITTER_PIN 53
-#define NUM_SENSORS 16
+#define NUM_SENSORS 20
 #define BUTTON 2
 
 
-QTRDimmableRC array1((unsigned char[]){50,51,52,43,44,45,46,47,38,39,40,41,42,33,34,35},
+QTRDimmableRC array1((unsigned char[]){50,51,52,53,54,43,44,45,46,47,38,39,40,41,42,33,34,35,36,37},
   NUM_SENSORS, TIMEOUT, EMITTER_PIN);
 
 unsigned int sensorValues[16] = {0};
