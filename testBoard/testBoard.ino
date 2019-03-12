@@ -6,12 +6,16 @@
 #define EMITTER_PIN 53
 #define NUM_SENSORS 20
 #define BUTTON 2
+#define COUNTS_TO_AVERAGE 10
 
 
 QTRDimmableRC array1((unsigned char[]){33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52},
   NUM_SENSORS, TIMEOUT, EMITTER_PIN);
 
 unsigned int sensorValues[NUM_SENSORS] = {0};
+unsigned int count = 0;
+unsigned long avg = 0;
+unsigned int storedVals[COUNTS_TO_AVERAGE] = {0};
 
 void setup() {
   Serial.begin(9600);
@@ -23,9 +27,23 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  Serial.print(array1.readLine(sensorValues, QTR_EMITTERS_ON, true));
-  Serial.print('\n');
 
+  if(count == COUNTS_TO_AVERAGE){
+    for(int i = 0; i < COUNTS_TO_AVERAGE; i++){
+      avg += storedVals[i];
+    }//end for
+    avg = avg/count;
+    Serial.print(avg);
+    Serial.print('\n');
+
+    avg = 0;
+    count = 0;
+
+    
+  }//end if
+
+  storedVals[count] = array1.readLine(sensorValues, QTR_EMITTERS_ON, true);
+  count++;
 //  array1.readCalibrated(sensorValues);
 //  for(int i = 0; i < NUM_SENSORS; i++){
 //    Serial.print(sensorValues[i]);
