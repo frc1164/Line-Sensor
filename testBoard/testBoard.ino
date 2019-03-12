@@ -18,14 +18,13 @@ void setup() {
 // put your setup code here, to run once:
   pinMode(BUTTON, INPUT_PULLUP);
   array1.calibrate();
-  updateCalibration();
-  
+  updateCalibration();  
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-//  Serial.print(array1.readLine(sensorValues, QTR_EMITTERS_ON, true));
-//  Serial.print('\n');
+  Serial.print(array1.readLine(sensorValues, QTR_EMITTERS_ON, true));
+  Serial.print('\n');
 
 //  array1.readCalibrated(sensorValues);
 //  for(int i = 0; i < NUM_SENSORS; i++){
@@ -37,25 +36,57 @@ void loop() {
   if(digitalRead(BUTTON) == LOW){
     //Print calibration arrays
     
-//    printCalibration(array1, "Old Calibration");
-//    array1.resetCalibration();
-//    printCalibration(array1, "Reset Calibration");
+    Serial.println("Old Calibration");
+    for(int i = 0; i < NUM_SENSORS; i++){
+        Serial.print(array1.calibratedMaximumOn[i]);
+        Serial.print(' ');
+      }//end for
+      Serial.print('\n');
+    for(int i = 0; i < NUM_SENSORS; i++){
+        Serial.print(array1.calibratedMinimumOn[i]);
+        Serial.print(' ');
+      }//end for
+    Serial.print('\n');   
+     
+    array1.resetCalibration();
+    
+    Serial.println("Reset Calibration");
+    for(int i = 0; i < NUM_SENSORS; i++){
+      Serial.print(array1.calibratedMaximumOn[i]);
+      Serial.print(' ');
+    }//end for
+    Serial.print('\n');
+    for(int i = 0; i < NUM_SENSORS; i++){
+      Serial.print(array1.calibratedMinimumOn[i]);
+      Serial.print(' ');
+    }//end for
+    Serial.print('\n');
     
     while(digitalRead(BUTTON) == LOW){
       array1.calibrate();
     }// end while
     
-//    printCalibration(array1, "New Calibration");
-    
+    Serial.println("New Calibration");
+    for(int i = 0; i < NUM_SENSORS; i++){
+        Serial.print(array1.calibratedMaximumOn[i]);
+        Serial.print(' ');
+      }//end for
+      Serial.print('\n');
+      for(int i = 0; i < NUM_SENSORS; i++){
+        Serial.print(array1.calibratedMinimumOn[i]);
+        Serial.print(' ');
+      }//end for
+    Serial.print('\n');
+      
     saveCalibration();
     Serial.print("\n\n");
 
-//    Serial.println("EEPROM contents");
-//    for(int i = 0; i < NUM_SENSORS * 2; i++){
-//      Serial.print(EEPROM[i]);
-//      Serial.print(' ');
-//    }//end for
-//    Serial.print("\n\n");
+    Serial.println("EEPROM contents");
+    for(int i = 0; i < NUM_SENSORS * 4; i++){
+      Serial.print(EEPROM[i]);
+      Serial.print(' ');
+    }//end for
+    Serial.print("\n\n");
 
   }//end if
 
@@ -63,8 +94,10 @@ void loop() {
 }
 void saveCalibration(){
   for(int i = 0; i < NUM_SENSORS; i++){
-    EEPROM.update(i, array1.calibratedMaximumOn[i] / 10);
-    EEPROM.update(i + NUM_SENSORS, array1.calibratedMinimumOn[i] / 10);
+    EEPROM.update(i*2, array1.calibratedMaximumOn[i] / 10);
+    EEPROM.update((i*2)+1, array1.calibratedMaximumOn[i] % 10);
+    EEPROM.update((i + NUM_SENSORS)*2, array1.calibratedMinimumOn[i] / 10);
+    EEPROM.update((i+NUM_SENSORS)*2 + 1, array1.calibratedMinimumOn[i] % 10);
   } // end for loop
 }//end saveCalibration
 
@@ -72,24 +105,10 @@ void updateCalibration(){
 
   for(int i = 0; i < NUM_SENSORS; i++){
 
-    array1.calibratedMaximumOn[i] = EEPROM[i] * 10;
+    array1.calibratedMaximumOn[i] = EEPROM[i*2] * 10 + EEPROM[(i*2)+1];
 
-    array1.calibratedMinimumOn[i] = EEPROM[i + NUM_SENSORS] * 10;
+    array1.calibratedMinimumOn[i] = EEPROM[(i + NUM_SENSORS)*2] * 10 + EEPROM[(i + NUM_SENSORS)*2 + 1];
 
   }//end save step
 
 }//end updateCalibration
-
-void printCalibration(QTRSensors sensor, String message){
-  Serial.println(message);
-  for(int i = 0; i < NUM_SENSORS; i++){
-      Serial.print(sensor.calibratedMaximumOn[i]);
-      Serial.print(' ');
-    }//end for
-    Serial.print('\n');
-    for(int i = 0; i < NUM_SENSORS; i++){
-      Serial.print(sensor.calibratedMinimumOn[i]);
-      Serial.print(' ');
-    }//end for
-    Serial.print('\n');
-}//end printCalibration
