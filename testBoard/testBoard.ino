@@ -42,8 +42,13 @@ void loop() {
     
   }//end if
 
-  storedVals[count] = array1.readLine(sensorValues, QTR_EMITTERS_ON, true);
+  storedVals[count] = array1.readLine(sensorValues, QTR_EMITTERS_ON, 1);
   count++;
+
+
+//  Serial.print(array1.readLine(sensorValues, QTR_EMITTERS_ON, true));
+//  Serial.print('\n');
+
 //  array1.readCalibrated(sensorValues);
 //  for(int i = 0; i < NUM_SENSORS; i++){
 //    Serial.print(sensorValues[i]);
@@ -65,6 +70,13 @@ void loop() {
         Serial.print(' ');
       }//end for
     Serial.print('\n');   
+
+    Serial.println("EEPROM old contents");
+    for(int i = 0; i < NUM_SENSORS * 4; i++){
+      Serial.print(EEPROM[i]);
+      Serial.print(' ');
+    }//end for
+    Serial.print("\n\n");
      
     array1.resetCalibration();
     
